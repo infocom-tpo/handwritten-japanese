@@ -40,13 +40,11 @@ async function predict(element: HTMLImageElement) {
   const w = img.shape[2] as number;
   const input = img.pad([[0, 0], [0, height - h], [0, width - w], [0, 0]], 255);
 
-  const result = tf.tidy((): string => {
-    let text: string[] = [];
-    
+  const result = tf.tidy((): string => {    
     if (model){
       const pred = model.predict(input) as tf.Tensor<tf.Rank>;
       const debug = pred.arraySync() as number[][];
-      text = degbugTxt(debug);
+      return degbugTxt(debug);
       
       // const predIndex = pred.argMax(1);
       // const data = predIndex.dataSync() as Int32Array;
@@ -57,7 +55,7 @@ async function predict(element: HTMLImageElement) {
       //   }
       // }
     }
-    return text.join('');
+    return ""
   });
   return result;
 }
@@ -71,41 +69,40 @@ function debugImg(img: HTMLImageElement){
   imgElement.appendChild(img);
 }
 
-function degbugTxt(debug: number[][]): string[] {
+function degbugTxt(debug: number[][]): string {
   const textElement = document.getElementById('debugTxt') as HTMLDivElement;
   while(textElement.lastChild){
     textElement.removeChild(textElement.lastChild);
   }
-  const text: string[] = [];
+  const items = debug.map(d => {
+    return d.map((acc, idx) => ({key: idx, value: acc}))
+      .filter( item => (item.value > d[0]) )
+      .sort(function (a, b) {
+        return b.value - a.value;
+      });
+  });
+  
   let tmp = 0;
-  for (let i = 0; i < debug.length; i += 1) {
-    const idx0 = debug[i][0];
-    const items = debug[i].map(
-      (acc, idx) => ({key: idx, value: acc})
-    ).filter( item => (item.value > idx0) )
-    
-    if (items.length === 0){
-      tmp = 0;
-      continue
+  const text = items.map(d => {
+    if (d.length == 0){
+      tmp = 0
+      return null;
     }
-    items.sort(function (a, b) {
-      return b.value - a.value;
-    });
-    if (tmp === items[0].key){
-      continue;
+    if (tmp === d[0].key){
+      return null;
     }
-    tmp = items[0].key;
-    const texts = items.slice(0,3).map((item) =>{
+    tmp = d[0].key;
+    const texts = d.slice(0,3).map((item) =>{
       const idx = item.key;
       const acc = item.value;
       return characters[idx] + " " + String(acc)
     });
-    text.push(characters[items[0].key])
     const div = document.createElement("div");
     div.innerHTML = "<hr/>" + texts.join("<br />");
     textElement.appendChild(div);
-  }
-  return text
+    return characters[d[0].key];
+  })
+  return text.join("")
 }
 
 function checkPos(x: number, y: number){
