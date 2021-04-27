@@ -79,32 +79,31 @@ function degbugTxt(debug: number[][]): string[] {
   const text: string[] = [];
   let tmp = 0;
   for (let i = 0; i < debug.length; i += 1) {
-    let items: {key : number, value: number}[] = []
     const idx0 = debug[i][0];
-    for (let j = 0; j < debug[i].length; j += 1) {
-      if (debug[i][j] > idx0){
-        items.push({'key': j, 'value': debug[i][j]})
-      }
+    const items = debug[i].map(
+      (acc, idx) => ({key: idx, value: acc})
+    ).filter( item => (item.value > idx0) )
+    
+    if (items.length === 0){
+      tmp = 0;
+      continue
     }
-    if (items.length > 0){
-      items.sort(function (a, b) {
-        return b.value - a.value;
-      });
-      if (tmp === items[0].key){
-        tmp = items[0].key;
-        continue;
-      }
-      tmp = items[0].key;
-      const texts = items.slice(0,3).map((item) =>{
-        const idx = item.key;
-        const acc = item.value;
-        return characters[idx] + " " + String(acc)
-      });
-      text.push(characters[items[0].key])
-      const div = document.createElement("div");
-      div.innerHTML = "<hr/>" + texts.join("<br />");
-      textElement.appendChild(div);
+    items.sort(function (a, b) {
+      return b.value - a.value;
+    });
+    if (tmp === items[0].key){
+      continue;
     }
+    tmp = items[0].key;
+    const texts = items.slice(0,3).map((item) =>{
+      const idx = item.key;
+      const acc = item.value;
+      return characters[idx] + " " + String(acc)
+    });
+    text.push(characters[items[0].key])
+    const div = document.createElement("div");
+    div.innerHTML = "<hr/>" + texts.join("<br />");
+    textElement.appendChild(div);
   }
   return text
 }
