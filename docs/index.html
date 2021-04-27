@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+  <title>日本語手書き文字</title>
+  <script defer src="./scripts/main.js"></script>
+  <style>
+  html {
+    touch-action: none;
+    -webkit-touch-callout: none;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: visible scroll;
+  }
+  @font-face {
+    font-family: "Hiragino Sans";
+    src: local('HiraginoSans-W3');
+    font-weight: 300;
+  }
+
+  body { 
+    -webkit-text-size-adjust: 100％;
+    font-family: "Hiragino Sans";
+  }
+  h1 {
+    padding: 0px;
+    margin-bottom: 5px;
+  }
+  .button {
+    margin-bottom: 10px;
+  }
+  .button button {
+    margin-left: 10px;
+    height: 50px;
+    width: 120px;
+    font-size: 20px;
+  }
+  #canvas{
+    z-index: 2;
+    width:100%;
+    height: 100%;
+    position: relative;
+    /* background-color: rgb(222, 222, 222); */
+  }
+  .predict{
+    font-size: 30px;
+  }
+  .debug{
+    margin-left: 10px;
+  }
+  </style>
+  </head>
+  <body>
+    <h1>日本語手書き文字認識</h1>
+    <div class="main">
+      <div class="button">
+        <button id="clearBtn">CLEAR</button>
+        <button id="predictBtn">PREDICT</button>
+      </div>
+      <div id="canvas"></div>
+      <div class="predict">
+        <div id="predictTxt"></div>
+      </div>
+      <div class="debug">
+        <div id="debugImg"></div>
+        <div id="debugTxt"></div>
+      </div>
+    </div>
+  </body>
+</html>
